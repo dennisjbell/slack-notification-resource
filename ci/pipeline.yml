@@ -109,10 +109,10 @@ resources:
     uri: https://github.com/dennisjbell/slack-notification-resource.git
     branch: master
     private_key: (( vault "secret/pipelines/slack-notification-resource/github/dennisjbell:private" ))
-    ignore_paths:
-      - ci/release_notes.md
-      - ci/repipe
-      - ci/pipeline.yml
+    #ignore_paths:
+    #  - ci/release_notes.md
+    #  - ci/repipe
+    #  - ci/pipeline.yml
 
 - name: edge-image
   type: docker-image
