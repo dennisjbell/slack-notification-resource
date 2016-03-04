@@ -61,10 +61,13 @@ jobs:
   plan:
   - aggregate:
     - get: version
-    - get: edge-image
+    - get: edge
+      resource: edge-image
       passed: [build]
+      params: { save: true }
     - get: git
       passed: [build]
+
 
   - task: release
     config:
@@ -81,11 +84,23 @@ jobs:
       params:
         VERSION_FROM: version/number
 
-  - put: latest-image # as 'latest'
-  - put: latest-image # as 'vX.Y.Z'
-    params:
-      tag: version/number
-      tag_prefix: v
+  - do: # image push!
+    - put: latest-image # as 'latest'
+      params:
+        load_base:       edge
+        load_file:       edge/image
+        load_repository: (( grab meta.dockerhub.repository ))
+        load_tag:        edge
+
+    - put: latest-image # as 'vX.Y.Z'
+      params:
+        load_base:       edge
+        load_file:       edge/image
+        load_repository: (( grab meta.dockerhub.repository ))
+        load_tag:        edge
+
+        tag: version/number
+        tag_prefix: v
 
   - aggregate:
     - put: version
@@ -93,7 +108,7 @@ jobs:
         bump: patch
     - put: git
       params:
-        repository: releases/git
+        repository: git
         rebase:     true
     - put: github
       params:
@@ -106,7 +121,7 @@ resources:
   type: git
   source:
     #    uri: https://github.com/cloudfoundry-community/slack-notification-resource.git
-    uri: https://github.com/dennisjbell/slack-notification-resource.git
+    uri: git@github.com:dennisjbell/slack-notification-resource.git
     branch: master
     private_key: (( vault "secret/pipelines/slack-notification-resource/github/dennisjbell:private" ))
     #ignore_paths:
