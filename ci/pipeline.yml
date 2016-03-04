@@ -87,7 +87,7 @@ resources:
     #    uri: https://github.com/cloudfoundry-community/slack-notification-resource.git
     uri: https://github.com/dennisjbell/slack-notification-resource.git
     branch: master
-    private_key: (( vault "secret/pipelines/slack-notification-resource/github:private" ))
+    private_key: (( vault "secret/pipelines/slack-notification-resource/github/dennisjbell:private" ))
 
 - name: edge-image
   type: docker-image
