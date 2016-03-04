@@ -1,0 +1,19 @@
+#!/bin/bash
+
+CONCOURSE_TARGET=${CONCOURSE_TARGET:-sw-vsphere}
+PIPELINE=${PIPELINE:-slack-notification}
+
+cd $(dirname $BASH_SOURCE[0])
+echo "Working in $(pwd)"
+
+if [[ -z "$VAULT_ADDR" ]] ; then
+	echo >&2 "Vault address not specified in VAULT_ADDR environment variable"
+	exit 1
+fi
+
+set -e
+
+spruce merge pipeline.yml > live.yml
+
+fly --target ${CONCOURSE_TARGET} set-pipeline     --pipeline ${PIPELINE} --config live.yml
+fly --target ${CONCOURSE_TARGET} unpause-pipeline --pipeline ${PIPELINE}
