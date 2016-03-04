@@ -62,7 +62,9 @@ jobs:
   - aggregate:
     - get: version
     - get: edge-image
+      passed: [build]
     - get: git
+      passed: [build]
 
   - task: release
     config:
