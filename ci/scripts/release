@@ -1,0 +1,40 @@
+#!/bin/bash
+set -eu
+
+if [[ ! -f git/ci/release_notes.md ]]; then
+  echo >&2 "ci/release_notes.md not found.  Did you forget to write them?"
+  exit 1
+fi
+
+if [[ -z ${VERSION_FROM} ]]; then
+  echo >&2 "VERSION_FROM environment variable not set, or empty.  Did you misconfigure Concourse?"
+  exit 2
+fi
+if [[ ! -f ${VERSION_FROM} ]]; then
+  echo >&2 "Version file (${VERSION_FROM}) not found.  Did you misconfigure Concourse?"
+  exit 2
+fi
+VERSION=$(cat ${VERSION_FROM})
+if [[ -z ${VERSION} ]]; then
+  echo >&2 "Version file (${VERSION_FROM}) was empty.  Did you misconfigure Concourse?"
+  exit 2
+fi
+
+mkdir -p gh
+echo "v${VERSION}" > gh/tag
+echo "Slack Notification Resource v${VERSION}" > gh/name
+mv git/ci/release_notes.md gh/notes.md
+
+# GIT!
+if [[ -z $(git config --global user.email) ]]; then
+  git config --global user.email "ci@starkandwayne.com"
+fi
+if [[ -z $(git config --global user.name) ]]; then
+  git config --global user.name "CI Bot"
+fi
+
+(cd git
+ git merge --no-edit master
+ git add -A
+ git status
+ git commit -m "release v${VERSION}")

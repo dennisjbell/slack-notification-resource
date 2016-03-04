@@ -63,22 +63,41 @@ jobs:
     - get: version
     - get: edge-image
     - get: git
-  - put: latest-image
-  - put: latest-image
+
+  - task: release
+    config:
+      image: docker:///starkandwayne/concourse
+      platform: linux
+      inputs:
+        - name: git
+        - name: version
+      outputs:
+        - name: gh
+      run:
+        path: ./git/ci/scripts/release
+        args: []
+      params:
+        VERSION_FROM: version/number
+
+  - put: latest-image # as 'latest'
+  - put: latest-image # as 'vX.Y.Z'
     params:
       tag: version/number
       tag_prefix: v
+
   - aggregate:
     - put: version
-      params: 
-        bump: patch
-    - put: github-final-release
       params:
-        name: create-final-release/spruce/releases/name
-        tag: create-final-release/spruce/releases/tag
-        body: create-final-release/spruce/releases/notes.md
-        globs:
-        - create-final-release/spruce/releases/spruce-*
+        bump: patch
+    - put: git
+      params:
+        repository: releases/git
+        rebase:     true
+    - put: github
+      params:
+        name: gh/name
+        tag:  gh/tag
+        body: gh/notes.md
 
 resources:
 - name: git
@@ -88,6 +107,10 @@ resources:
     uri: https://github.com/dennisjbell/slack-notification-resource.git
     branch: master
     private_key: (( vault "secret/pipelines/slack-notification-resource/github/dennisjbell:private" ))
+    ignore_paths:
+      - ci/release_notes.md
+      - ci/repipe
+      - ci/pipeline.yml
 
 - name: edge-image
   type: docker-image
@@ -115,7 +138,7 @@ resources:
 #  type: slack-notification
 
 
-- name: github-final-release
+- name: github
   type: github-release
   source:
     user: dennisjbell
