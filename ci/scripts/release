@@ -37,6 +37,5 @@ fi
  git merge --no-edit master
  git add -A
  git status
- git commit -m "release v${VERSION}")
-
-cp -a git pushme/
+ git commit -m "release v${VERSION}"
+ git push origin master)

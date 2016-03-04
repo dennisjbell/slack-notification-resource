@@ -78,7 +78,6 @@ jobs:
         - name: version
       outputs:
         - name: gh
-        - name: pushme
       run:
         path: ./git/ci/scripts/release
         args: []
@@ -107,10 +106,6 @@ jobs:
     - put: version
       params:
         bump: patch
-    - put: git
-      params:
-        repository: pushme/git
-        rebase:     true
     - put: github
       params:
         name: gh/name
