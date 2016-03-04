@@ -1,0 +1,22 @@
+---
+# settings for the slack-notification-resource pipeline
+meta:
+  target: sw # https://ci.vsphere.starkandwayne.com
+  name:   slack-notification
+
+  aws:
+    access_key: (( vault "secret/aws/cfcommunity:access" ))
+    secret_key: (( vault "secret/aws/cfcommunity:secret" ))
+
+  dockerhub:
+    email:    (( vault "secret/dockerhub:email" ))
+    username: (( vault "secret/dockerhub:username" ))
+    password: (( vault "secret/dockerhub:password" ))
+    repository: starkandwaynebot/slack-notification-resource
+
+  github:
+    #owner: cloudfoundry-community
+    owner:  dennisjbell
+    repo: slack-notification-resource
+    private_key:  (( vault "secret/pipelines/slack-notification-resource/github/dennisjbell:private" ))
+    access_token: (( vault "secret/pipelines/slack-notification-resource/github:token" ))

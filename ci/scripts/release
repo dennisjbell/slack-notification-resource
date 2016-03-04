@@ -1,4 +1,14 @@
 #!/bin/bash
+#
+# ci/scripts/release
+#
+# Script for generating Github release / tag assets
+# and managing release notes for a Docker Image pipeline
+#
+# author:  James Hunt <james@niftylogic.com>
+#          Dennis Bell <dennis.j.bell@gmail.com>
+# created: 2016-03-04
+
 set -eu
 
 if [[ ! -f git/ci/release_notes.md ]]; then
@@ -20,10 +30,9 @@ if [[ -z ${VERSION} ]]; then
   exit 2
 fi
 
-mkdir -p gh
-echo "v${VERSION}" > gh/tag
-echo "Slack Notification Resource v${VERSION}" > gh/name
-mv git/ci/release_notes.md gh/notes.md
+echo "v${VERSION}"                             > ${RELEASE_ROOT}/tag
+echo "Slack Notification Resource v${VERSION}" > ${RELEASE_ROOT}/name
+mv ${REPO_ROOT}/ci/release_notes.md              ${RELEASE_ROOT}/notes.md
 
 # GIT!
 if [[ -z $(git config --global user.email) ]]; then
@@ -33,10 +42,11 @@ if [[ -z $(git config --global user.name) ]]; then
   git config --global user.name "CI Bot"
 fi
 
-(cd git
+(cd ${REPO_ROOT}
  git merge --no-edit master
  git add -A
  git status
  git commit -m "release v${VERSION}")
 
-cp -a git pushme/git
+# so that future steps in the pipeline can push our changes
+cp -a ${REPO_ROOT} ${REPO_OUT}
