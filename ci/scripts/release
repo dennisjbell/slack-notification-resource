@@ -39,4 +39,4 @@ fi
  git status
  git commit -m "release v${VERSION}")
 
-mv git pushme/
+cp -a git pushme/
