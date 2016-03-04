@@ -20,3 +20,7 @@ meta:
     repo: slack-notification-resource
     private_key:  (( vault "secret/pipelines/slack-notification-resource/github/dennisjbell:private" ))
     access_token: (( vault "secret/pipelines/slack-notification-resource/github:token" ))
+
+  slack:
+    webhook: (( vault "secret/pipelines/slack-notification-resource/slack:webhook" ))
+    channel: '#botspam'
