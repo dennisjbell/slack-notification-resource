@@ -37,14 +37,6 @@ fi
  git merge --no-edit master
  git add -A
  git status
- git commit -m "release v${VERSION}"
+ git commit -m "release v${VERSION}")
 
- mkdir -p ~/.ssh
- cat > ~/.ssh/config <<EOF
-StrictHostKeyChecking no
-LogLevel quiet
-EOF
- chmod 0600 ~/.ssh/config
-
- git pull --rebase origin master
- git push origin master)
+cp -a git pushme/git
